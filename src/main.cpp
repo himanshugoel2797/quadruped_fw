@@ -7,10 +7,10 @@ int main()
 {
    PiPCA9685::PCA9685 pca{};
 
-    pca.setPWMFreq(50);
+    pca.set_pwm_freq(50);
 
     for (int i = 0; i < 16; i++)
     {
-        pca.setPWM(i, 0, 300);
+        pca.set_pwm(i, 0, 300);
     }
 }
