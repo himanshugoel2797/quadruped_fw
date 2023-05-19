@@ -233,7 +233,7 @@ int main(int argc, char** argv )
             printf("Calibration data written to %s\n", filename);
 
             //Reset the servo to the middle value
-            pca.set_pwm(servo_index, 0, SERVOMID);
+            pca.set_pwm(servo_index, 0, (max_pwm - min_pwm) / 2 + min_pwm);
         }
     }
 /*
