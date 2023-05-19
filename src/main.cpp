@@ -150,7 +150,7 @@ int main(int argc, char** argv )
             //When the counter value stops changing, we have found the maximum value
             //Save the minimum and maximum values and convert the counter values to angles
             int min_counter = INT32_MAX, max_counter = INT32_MIN, min_pwm = INT32_MAX, max_pwm = INT32_MIN;
-            int prev_counter = -2, cur_counter = -1;
+            int prev_counter = -2, cur_counter = -1, same_counter = 0;
             
             //Set the servo to a reasonable middle value
             /*pca.set_pwm(servo_index, 0, SERVOMID);
@@ -166,35 +166,50 @@ int main(int argc, char** argv )
             pca.set_pwm(servo_index, 0, SERVOMID + 50);
 
             //Decrease the servo value until the counter value stops changing
-            for (int pwm = SERVOMID; pwm >= 0; pwm -= 15)
+            for (int pwm = SERVOMID; pwm >= 0; pwm --)
             {
                 pca.set_pwm(servo_index, 0, pwm);
-                usleep(200000);
+                usleep(20000);
                 prev_counter = cur_counter;
                 cur_counter = rot_counter;
                 if (prev_counter == cur_counter)
                 {
                     min_counter = cur_counter;
+                    if (same_counter == 0) min_pwm = pwm;
+                    same_counter++;
+                }
+                else
+                    same_counter = 0;
+                
+                if(same_counter > 25)
+                {
                     min_pwm = pwm;
                     printf("min_counter: %d, min_pwm: %d\n", min_counter, min_pwm);
                     break;
                 }
             }
 
-            prev_counter = -2, cur_counter = -1;
+            prev_counter = -2, cur_counter = -1, same_counter = 0;
             pca.set_pwm(servo_index, 0, SERVOMID - 50);
 
             //Increase the servo value until the counter value stops changing
-            for (int pwm = SERVOMID; pwm <= 2048; pwm += 15)
+            for (int pwm = SERVOMID; pwm <= 2048; pwm ++)
             {
                 pca.set_pwm(servo_index, 0, pwm);
-                usleep(200000);
+                usleep(20000);
                 prev_counter = cur_counter;
                 cur_counter = rot_counter;
                 if (prev_counter == cur_counter)
                 {
                     max_counter = cur_counter;
-                    max_pwm = pwm;
+                    if (same_counter == 0) max_pwm = pwm;
+                    same_counter++;
+                }
+                else
+                    same_counter = 0;
+                
+                if (same_counter > 25)
+                {
                     printf("max_counter: %d, max_pwm: %d\n", max_counter, max_pwm);
                     break;
                 }
