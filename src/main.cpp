@@ -8,45 +8,17 @@
 #include <pigpio.h>
 #include <PiPCA9685/PCA9685.h>
 
-#define SERVOMIN  60
-#define SERVOMID ((SERVOMIN + SERVOMAX) / 2)
-#define SERVOMAX  500
-
-#define FR0 6
-#define FL0 7
-#define FR1 4
-#define FL1 5
-#define FR2 2
-#define FL2 3
-#define FR3 0
-#define FL3 1
-#define BR0 8
-#define BL0 9
-#define BR1 10
-#define BL1 11
-#define BR2 12
-#define BL2 13
-#define BR3 14
-#define BL3 15
-
-#define L01 50
-#define L12 45
-#define L23 45
-#define L3E 78
-#define LET 22
-
-#define AET 81
+#include "bot_utils.h"
 
 float ctr = 0.0f;
 
 int calcS(float val)
 {
+  val = val / 90.0f - 1.0f;
   if (val >= 1.0f) val = 1.0f;
   if (val <= -1.0f) val = -1.0f;
   return ( val * (float)(SERVOMAX - SERVOMIN) / 2.) + SERVOMID;
 }
-
-
 
 int main(int argc, char** argv )
 {
@@ -79,7 +51,7 @@ int main(int argc, char** argv )
     {
         for (int i = 0; i < 16; i++)
         {
-            pca.set_pwm(i, 0, calcS(0.0f));
+            pca.set_pwm(i, 0, calcS(90.0f));
         }
         while(true)
         {
@@ -250,17 +222,17 @@ int main(int argc, char** argv )
     {
         while(true)
         {
-            pca.set_pwm(FR0, 0, calcS( 0.0f));
-            pca.set_pwm(FL0, 0, calcS( 0.0f));
-            pca.set_pwm(BR0, 0, calcS( 0.0f));
-            pca.set_pwm(BL0, 0, calcS( 0.0f));
+            pca.set_pwm(FR0, 0, calcS( 90.0f));
+            pca.set_pwm(FL0, 0, calcS( 90.0f));
+            pca.set_pwm(BR0, 0, calcS( 90.0f));
+            pca.set_pwm(BL0, 0, calcS( 90.0f));
 
-            pca.set_pwm(FR1, 0, calcS( 0.1f));
-            pca.set_pwm(FL1, 0, calcS( 0.0f));
-            pca.set_pwm(BR1, 0, calcS( 0.1f));
-            pca.set_pwm(BL1, 0, calcS( 0.1f));
+            pca.set_pwm(FR1, 0, calcS( 99));
+            pca.set_pwm(FL1, 0, calcS( 90));
+            pca.set_pwm(BR1, 0, calcS( 99));
+            pca.set_pwm(BL1, 0, calcS( 99));
 
-            float ctr0 = asinf(sinf(ctr)) * 0.8f / 3.1415f;
+            float ctr0 = asinf(sinf(ctr)) * (90 * 1.8f) / 3.1415f;
             ctr += 0.1f;
             if (ctr > 2*3.1415f)ctr -= 2*3.1415f;
 
