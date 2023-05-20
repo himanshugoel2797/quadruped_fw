@@ -1,3 +1,6 @@
 [submodule "PiPCA9685"]
 	path = PiPCA9685
 	url = https://github.com/barulicm/PiPCA9685.git
+[submodule "glm"]
+	path = glm
+	url = https://github.com/g-truc/glm

@@ -8,8 +8,8 @@
 #include <pigpio.h>
 #include <PiPCA9685/PCA9685.h>
 
-#define SERVOMIN  100
-#define SERVOMID 300
+#define SERVOMIN  60
+#define SERVOMID ((SERVOMIN + SERVOMAX) / 2)
 #define SERVOMAX  500
 
 #define FR0 6
@@ -29,6 +29,13 @@
 #define BR3 14
 #define BL3 15
 
+#define L01 50
+#define L12 45
+#define L23 45
+#define L3E 78
+#define LET 22
+
+#define AET 81
 
 float ctr = 0.0f;
 
@@ -38,6 +45,8 @@ int calcS(float val)
   if (val <= -1.0f) val = -1.0f;
   return ( val * (float)(SERVOMAX - SERVOMIN) / 2.) + SERVOMID;
 }
+
+
 
 int main(int argc, char** argv )
 {
@@ -81,12 +90,11 @@ int main(int argc, char** argv )
             int ret = scanf("%d %f", &index, &position);
             if (ret != 2)
             {
-                printf("Error reading from stdin: %d\n", errno);
-                continue;
+                goto exit;
             }
 
             // Set motor position
-            pca.set_pwm(index, 0, (int)position);
+            pca.set_pwm(index, 0, calcS(position));
         }
     }
     else if (calibration_mode)
@@ -120,6 +128,8 @@ int main(int argc, char** argv )
                         rot_counter --;
                     else
                         rot_counter ++;
+
+                    //printf("rot_counter: %d\n", rot_counter);
                 }
                 usleep(1000);
                 prev_clk = cur_clk;
@@ -236,34 +246,38 @@ int main(int argc, char** argv )
             pca.set_pwm(servo_index, 0, (max_pwm - min_pwm) / 2 + min_pwm);
         }
     }
-/*
-        pca.set_pwm(FR0, 0, calcS( 0.0f));
-        pca.set_pwm(FL0, 0, calcS( 0.0f));
-        pca.set_pwm(BR0, 0, calcS( 0.0f));
-        pca.set_pwm(BL0, 0, calcS( 0.0f));
+    else
+    {
+        while(true)
+        {
+            pca.set_pwm(FR0, 0, calcS( 0.0f));
+            pca.set_pwm(FL0, 0, calcS( 0.0f));
+            pca.set_pwm(BR0, 0, calcS( 0.0f));
+            pca.set_pwm(BL0, 0, calcS( 0.0f));
 
-        pca.set_pwm(FR1, 0, calcS(-0.1f));
-        pca.set_pwm(FL1, 0, calcS(-0.1f));
-        pca.set_pwm(BR1, 0, calcS( 0.0f));
-        pca.set_pwm(BL1, 0, calcS(-0.1f));
+            pca.set_pwm(FR1, 0, calcS( 0.1f));
+            pca.set_pwm(FL1, 0, calcS( 0.0f));
+            pca.set_pwm(BR1, 0, calcS( 0.1f));
+            pca.set_pwm(BL1, 0, calcS( 0.1f));
 
-        float ctr0 = asinf(sinf(ctr)) * 0.8f / 3.1415f;
-        ctr += 0.8f;
-        if (ctr > 2*3.1415f)ctr -= 2*3.1415f;
+            float ctr0 = asinf(sinf(ctr)) * 0.8f / 3.1415f;
+            ctr += 0.1f;
+            if (ctr > 2*3.1415f)ctr -= 2*3.1415f;
 
-        pca.set_pwm(FR2, 0, calcS(ctr0));
-        pca.set_pwm(FL2, 0, calcS(ctr0));
-        pca.set_pwm(BR2, 0, calcS(ctr0));
-        pca.set_pwm(BL2, 0, calcS(ctr0));
+            pca.set_pwm(FR2, 0, calcS(ctr0));
+            pca.set_pwm(FL2, 0, calcS(-ctr0));
+            pca.set_pwm(BR2, 0, calcS(ctr0));
+            pca.set_pwm(BL2, 0, calcS(-ctr0));
 
-        float off = -0.1f;
-        pca.set_pwm(FR3, 0, calcS(ctr0 + off));
-        pca.set_pwm(FL3, 0, calcS(ctr0 + off));
-        pca.set_pwm(BR3, 0, calcS(ctr0 + off));
-        pca.set_pwm(BL3, 0, calcS(ctr0 + off));
-        
-        usleep(50'000);
-*/
+            float off = -0.0f;
+            pca.set_pwm(FL3, 0, calcS(-(ctr0 + off)));
+            pca.set_pwm(FR3, 0, calcS(ctr0 + off));
+            pca.set_pwm(BL3, 0, calcS(-(ctr0 + off)));
+            pca.set_pwm(BR3, 0, calcS(ctr0 + off));
+            
+            usleep(50'000);
+        }
+    }
 
 exit:
     gpioTerminate();
