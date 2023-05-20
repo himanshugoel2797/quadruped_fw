@@ -44,11 +44,11 @@ int main(int argc, char** argv )
     
     gpioInitialise();
 
-    PiPCA9685::PCA9685 pca{};
-    pca.set_pwm_freq(50);
 
     if (motor_move)
     {
+        PiPCA9685::PCA9685 pca{};
+        pca.set_pwm_freq(50);
         for (int i = 0; i < 16; i++)
         {
             pca.set_pwm(i, 0, calcS(90.0f));
@@ -220,9 +220,45 @@ int main(int argc, char** argv )
     }
     else
     {
+        ServoController servo_controller{};
+
+        float a01 = M_PI_2;
+        float a12 = M_PI_2;
+        float a23 = M_PI_2;
+        float a3e = M_PI_2;
         while(true)
         {
-            pca.set_pwm(FR0, 0, calcS( 90.0f));
+            glm::vec3 pos_fl = calcLegPosFromCenter(true, true, a01, a12, a23, a3e);
+            glm::vec3 pos_fr = calcLegPosFromCenter(true, false, a01, a12, a23, a3e);
+            glm::vec3 pos_bl = calcLegPosFromCenter(false, true, a01, a12, a23, a3e);
+            glm::vec3 pos_br = calcLegPosFromCenter(false, false, a01, a12, a23, a3e);
+
+            printf("FL: %f %f %f\n", pos_fl.x, pos_fl.y, pos_fl.z);
+            printf("FR: %f %f %f\n", pos_fr.x, pos_fr.y, pos_fr.z);
+            printf("BL: %f %f %f\n", pos_bl.x, pos_bl.y, pos_bl.z);
+            printf("BR: %f %f %f\n", pos_br.x, pos_br.y, pos_br.z);
+
+            servo_controller.Move(FL0, a01);
+            servo_controller.Move(FR0, a01);
+            servo_controller.Move(BL0, a01);
+            servo_controller.Move(BR0, a01);
+
+            servo_controller.Move(FL1, a12);
+            servo_controller.Move(FR1, a12);
+            servo_controller.Move(BL1, a12);
+            servo_controller.Move(BR1, a12);
+
+            servo_controller.Move(FL2, a23);
+            servo_controller.Move(FR2, a23);
+            servo_controller.Move(BL2, a23);
+            servo_controller.Move(BR2, a23);
+
+            servo_controller.Move(FL3, a3e);
+            servo_controller.Move(FR3, a3e);
+            servo_controller.Move(BL3, a3e);
+            servo_controller.Move(BR3, a3e);
+
+            /*pca.set_pwm(FR0, 0, calcS( 90.0f));
             pca.set_pwm(FL0, 0, calcS( 90.0f));
             pca.set_pwm(BR0, 0, calcS( 90.0f));
             pca.set_pwm(BL0, 0, calcS( 90.0f));
@@ -245,9 +281,11 @@ int main(int argc, char** argv )
             pca.set_pwm(FL3, 0, calcS(-(ctr0 + off)));
             pca.set_pwm(FR3, 0, calcS(ctr0 + off));
             pca.set_pwm(BL3, 0, calcS(-(ctr0 + off)));
-            pca.set_pwm(BR3, 0, calcS(ctr0 + off));
+            pca.set_pwm(BR3, 0, calcS(ctr0 + off));*/
             
-            usleep(50'000);
+
+
+            usleep(5'000'000);
         }
     }
 

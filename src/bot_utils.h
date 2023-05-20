@@ -63,11 +63,11 @@ static glm::vec3 calcLegPos(float a01, float a12, float a23, float a3e)
 
 static glm::vec3 calcLegPosFromCenter(bool front, bool left, float a01, float a12, float a23, float a3e)
 {
-    glm::vec3 pos = glm::vec3(0);
-    pos.x += front ? BODY_LENGTH : -BODY_LENGTH;
-    pos.y += left ? BODY_WIDTH : -BODY_WIDTH;
-
-    return pos + calcLegPos(a01, a12, a23, a3e);
+    glm::vec3 pos = glm::vec3(BODY_LENGTH, BODY_WIDTH, 0);
+    pos += calcLegPos(a01, a12, a23, a3e);
+    if (front) pos.x = -pos.x;
+    if (left) pos.y = -pos.y;
+    return pos;
 }
 
 class ServoController{
