@@ -31,3 +31,12 @@
 *.out
 *.app
 fw
+
+# CMake data
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+cmake_install.cmake
+
+build/**
