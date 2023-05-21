@@ -77,6 +77,9 @@ int main(int argc, char** argv )
         const uint32_t clk_mask = 1 << clk_pin;
         const uint32_t clkdt_mask = clk_mask | dt_mask;
 
+        PiPCA9685::PCA9685 pca{};
+        pca.set_pwm_freq(50);
+
         //Setup the clk pin
         gpioSetMode(clk_pin, PI_INPUT);
         
